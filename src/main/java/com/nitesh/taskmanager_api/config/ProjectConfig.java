@@ -7,6 +7,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.nitesh.taskmanager_api.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -18,14 +21,16 @@ public class ProjectConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+            JwtAuthenticationFilter jwtFilter) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for testing
+                .csrf(csrf -> csrf.disable())
                 .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin())) // allow h2 console frames
+                        .frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Allow all requests
-                );
+                        .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
