@@ -6,9 +6,7 @@ import java.util.stream.StreamSupport;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.nitesh.taskmanager_api.task.dto.TaskRequest;
-import com.nitesh.taskmanager_api.task.dto.TaskResponse;
-import com.nitesh.taskmanager_api.task.dto.UpdateTaskRequest;
+import com.nitesh.taskmanager_api.task.dto.*;
 import com.nitesh.taskmanager_api.user.User;
 import com.nitesh.taskmanager_api.user.UserRepository;
 
@@ -26,19 +24,20 @@ public class TaskService {
 
     }
 
-    // 1. Create Task
-    public TaskResponse createTask(TaskRequest taskRequest) {
-
+    private User getCurrentUser() {
         String email = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getName();
 
-        if (!userRepository.existsByEmail(email)) {
-            throw new RuntimeException("User not found");
-        }
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not Found!"));
+    }
 
-        User user = userRepository.findByEmail(email);
+    // 1. Create Task
+    public TaskResponse createTask(TaskRequest taskRequest) {
+
+        User user = getCurrentUser();
 
         Task task = Task.builder()
                 .title(taskRequest.title())
@@ -54,16 +53,7 @@ public class TaskService {
 
     // 2. Get All Tasks
     public List<TaskResponse> getAllTasks() {
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        if (!userRepository.existsByEmail(email)) {
-            throw new RuntimeException("User not found");
-        }
-
-        User user = userRepository.findByEmail(email);
+        User user = getCurrentUser();
 
         return StreamSupport
                 .stream(taskRepository.findByUser(user).spliterator(), false)
@@ -76,15 +66,7 @@ public class TaskService {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task with " + id + " not found"));
 
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        if (!userRepository.existsByEmail(email)) {
-            throw new RuntimeException("User not found");
-        }
-        User user = userRepository.findByEmail(email);
+        User user = getCurrentUser();
 
         if (task.getUser() != user) {
             throw new RuntimeException("Task doesn't belong to the user");
@@ -100,15 +82,7 @@ public class TaskService {
 
     // 4. Delete Task
     public void deleteTask(Long id) {
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-
-        if (!userRepository.existsByEmail(email)) {
-            throw new RuntimeException("User not found");
-        }
-        User user = userRepository.findByEmail(email);
+        User user = getCurrentUser();
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task with " + id + " not found"));
