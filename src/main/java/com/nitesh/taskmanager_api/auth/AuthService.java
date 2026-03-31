@@ -39,11 +39,9 @@ public class AuthService {
     }
 
     public String loginUser(LoginRequest request) {
-        if (!userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email not found!");
-        }
 
-        User user = userRepository.findByEmail(request.email());
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new RuntimeException("Email not found!"));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new RuntimeException("Invalid Credentials");
