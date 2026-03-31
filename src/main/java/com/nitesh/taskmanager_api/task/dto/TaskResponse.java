@@ -3,7 +3,8 @@ package com.nitesh.taskmanager_api.task.dto;
 import com.nitesh.taskmanager_api.task.TaskStatus;
 
 public record TaskResponse(
-        String title,
-        String description,
-        TaskStatus status) {
+    Long id,
+    String title,
+    String description,
+    TaskStatus status) {
 }
