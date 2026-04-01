@@ -6,6 +6,8 @@ import java.util.stream.StreamSupport;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.nitesh.taskmanager_api.exception.ResourceNotFoundException;
+import com.nitesh.taskmanager_api.exception.UnauthorizedException;
 import com.nitesh.taskmanager_api.task.dto.*;
 import com.nitesh.taskmanager_api.user.User;
 import com.nitesh.taskmanager_api.user.UserRepository;
@@ -31,7 +33,7 @@ public class TaskService {
                 .getName();
 
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not Found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not Found!"));
     }
 
     // 1. Create Task
@@ -64,12 +66,12 @@ public class TaskService {
     // 3. Update Task
     public TaskResponse updateTask(Long id, UpdateTaskRequest request) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task with " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task with " + id + " not found"));
 
         User user = getCurrentUser();
 
         if (task.getUser() != user) {
-            throw new RuntimeException("Task doesn't belong to the user");
+            throw new UnauthorizedException("Task doesn't belong to the user");
         }
         task.setTitle(request.title());
         task.setDescription(request.description());
@@ -85,10 +87,10 @@ public class TaskService {
         User user = getCurrentUser();
 
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task with " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task with " + id + " not found"));
 
         if (task.getUser() != user) {
-            throw new RuntimeException("Task doesn't belong to the user");
+            throw new UnauthorizedException("Task doesn't belong to the user");
         }
 
         taskRepository.deleteById(id);

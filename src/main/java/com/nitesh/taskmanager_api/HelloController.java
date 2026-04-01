@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
     @GetMapping("/hello")
     public ResponseEntity<String> sayHello() {
-        String str = "Hello you need to be authenticated to see this";
+        String str = "You need to be authenticated to see this";
         return ResponseEntity.ok(str);
     }
 
