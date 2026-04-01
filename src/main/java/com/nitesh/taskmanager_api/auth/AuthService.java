@@ -1,8 +1,11 @@
 package com.nitesh.taskmanager_api.auth;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.nitesh.taskmanager_api.exception.DuplicateResourceException;
+import com.nitesh.taskmanager_api.exception.ResourceNotFoundException;
 import com.nitesh.taskmanager_api.security.JwtService;
 import com.nitesh.taskmanager_api.user.User;
 import com.nitesh.taskmanager_api.user.UserRepository;
@@ -19,10 +22,10 @@ public class AuthService {
 
     public RegisterResponse registerUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("User with the email already exists");
+            throw new DuplicateResourceException("User with the email already exists");
         }
         if (userRepository.existsByUsername(request.username())) {
-            throw new RuntimeException("User with the username already exists");
+            throw new DuplicateResourceException("User with the username already exists");
         }
 
         User user = User.builder()
@@ -41,10 +44,10 @@ public class AuthService {
     public String loginUser(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("Email not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not Found"));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid Credentials");
+            throw new BadCredentialsException("Invalid password");
         }
 
         return jwtService.generateToken(request.email());

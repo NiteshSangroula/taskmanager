@@ -10,6 +10,7 @@ import com.nitesh.taskmanager_api.user.dto.LoginRequest;
 import com.nitesh.taskmanager_api.user.dto.RegisterRequest;
 import com.nitesh.taskmanager_api.user.dto.RegisterResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,13 +21,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> registerUser(
-            @RequestBody RegisterRequest request) {
+            @Valid @RequestBody RegisterRequest request) {
         RegisterResponse response = authService.registerUser(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginRequest request) {
+    public ResponseEntity<String> loginUser(@Valid @RequestBody LoginRequest request) {
         String token = authService.loginUser(request);
         return ResponseEntity.ok(token);
     }
