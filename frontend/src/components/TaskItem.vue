@@ -65,24 +65,94 @@ function remove() {
 </script>
 
 <template>
-  <li>
+  <li class="task card" :class="{ done: isDone }">
     <template v-if="!editing">
-      <input type="checkbox" :checked="isDone" :disabled="busy" @change="toggle" />
-      <strong :style="{ textDecoration: isDone ? 'line-through' : 'none' }">{{ task.title }}</strong>
-      <span> – {{ task.description }}</span>
-      <button :disabled="busy" @click="startEdit">Edit</button>
-      <button :disabled="busy" @click="remove">Delete</button>
+      <input type="checkbox" :checked="isDone" :disabled="busy" aria-label="Done" @change="toggle" />
+      <div class="text">
+        <strong class="name">{{ task.title }}</strong>
+        <span class="desc">{{ task.description }}</span>
+      </div>
+      <div class="actions">
+        <button class="secondary small" :disabled="busy" @click="startEdit">Edit</button>
+        <button class="danger small" :disabled="busy" @click="remove">Delete</button>
+      </div>
     </template>
 
     <template v-else>
-      <input v-model="draft.title" placeholder="Title" />
-      <small v-if="fieldErrors.title">{{ fieldErrors.title }}</small>
-      <input v-model="draft.description" placeholder="Description" />
-      <small v-if="fieldErrors.description">{{ fieldErrors.description }}</small>
-      <button :disabled="busy" @click="save">Save</button>
-      <button :disabled="busy" @click="editing = false">Cancel</button>
+      <div class="edit">
+        <div class="field">
+          <input v-model="draft.title" placeholder="Title" aria-label="Title" />
+          <small v-if="fieldErrors.title" class="err">{{ fieldErrors.title }}</small>
+        </div>
+        <div class="field">
+          <input v-model="draft.description" placeholder="Description" aria-label="Description" />
+          <small v-if="fieldErrors.description" class="err">{{ fieldErrors.description }}</small>
+        </div>
+        <div class="actions">
+          <button class="small" :disabled="busy" @click="save">Save</button>
+          <button class="secondary small" :disabled="busy" @click="editing = false">Cancel</button>
+        </div>
+      </div>
     </template>
 
-    <p v-if="error && !Object.keys(fieldErrors).length">{{ error }}</p>
+    <p v-if="error && !Object.keys(fieldErrors).length" class="banner full">{{ error }}</p>
   </li>
 </template>
+
+<style scoped>
+.task {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 4px 0 var(--wood-dark), 0 8px 14px rgba(0, 0, 0, .4);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.name {
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+}
+
+.desc {
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  gap: .5rem;
+}
+
+.edit {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+}
+
+.full {
+  flex-basis: 100%;
+}
+
+.task.done {
+  background: var(--paper-dark);
+}
+
+.task.done .name {
+  text-decoration: line-through;
+}
+
+.task.done .name,
+.task.done .desc {
+  opacity: .6;
+}
+</style>

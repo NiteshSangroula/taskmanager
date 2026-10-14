@@ -67,26 +67,30 @@ onMounted(load)
 </script>
 
 <template>
-  <main>
-    <header>
-      <h1>My tasks</h1>
-      <span>{{ auth.email }}</span>
-      <button @click="logout">Log out</button>
+  <main class="page">
+    <header class="topbar">
+      <h1>My Tasks</h1>
+      <span class="who">{{ auth.email }}</span>
+      <button class="secondary small" @click="logout">Log out</button>
     </header>
 
-    <form @submit.prevent="add">
-      <input v-model="title" placeholder="Title" />
-      <small v-if="fieldErrors.title">{{ fieldErrors.title }}</small>
-      <input v-model="description" placeholder="Description" />
-      <small v-if="fieldErrors.description">{{ fieldErrors.description }}</small>
+    <form class="card task-form" @submit.prevent="add">
+      <div class="field">
+        <input v-model="title" placeholder="Title" aria-label="Title" />
+        <small v-if="fieldErrors.title" class="err">{{ fieldErrors.title }}</small>
+      </div>
+      <div class="field">
+        <input v-model="description" placeholder="Description" aria-label="Description" />
+        <small v-if="fieldErrors.description" class="err">{{ fieldErrors.description }}</small>
+      </div>
       <button :disabled="adding">{{ adding ? 'Adding…' : 'Add task' }}</button>
     </form>
 
-    <p v-if="error && !Object.keys(fieldErrors).length">{{ error }}</p>
-    <p v-if="loading">Loading…</p>
-    <p v-else-if="!tasks.length">No tasks yet.</p>
+    <p v-if="error && !Object.keys(fieldErrors).length" class="banner">{{ error }}</p>
+    <p v-if="loading" class="loading">Loading…</p>
+    <p v-else-if="!tasks.length" class="empty">No tasks yet. Add your first one above.</p>
 
-    <ul>
+    <ul class="task-list">
       <TaskItem v-for="t in tasks" :key="t.id" :task="t" :on-save="save" :on-remove="remove" />
     </ul>
   </main>

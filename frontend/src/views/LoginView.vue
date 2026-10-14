@@ -29,22 +29,28 @@ async function submit() {
 </script>
 
 <template>
-  <main>
-    <h1>Log in</h1>
-    <form @submit.prevent="submit">
-      <label>Email
-        <input v-model="email" type="email" autocomplete="email" />
-      </label>
-      <small v-if="fieldErrors.email">{{ fieldErrors.email }}</small>
+  <main class="page narrow">
+    <div class="card">
+      <h1 class="title">Log in</h1>
+      <form class="stack" @submit.prevent="submit">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" v-model="email" type="email" autocomplete="email" />
+          <small v-if="fieldErrors.email" class="err">{{ fieldErrors.email }}</small>
+        </div>
 
-      <label>Password
-        <input v-model="password" type="password" autocomplete="current-password" />
-      </label>
-      <small v-if="fieldErrors.password">{{ fieldErrors.password }}</small>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" v-model="password" type="password" autocomplete="current-password" />
+          <small v-if="fieldErrors.password" class="err">{{ fieldErrors.password }}</small>
+        </div>
 
-      <p v-if="error && !Object.keys(fieldErrors).length">{{ error }}</p>
-      <button :disabled="loading">{{ loading ? 'Logging in…' : 'Log in' }}</button>
-    </form>
-    <RouterLink to="/register">Create an account</RouterLink>
+        <p v-if="error && !Object.keys(fieldErrors).length" class="banner">{{ error }}</p>
+        <button :disabled="loading">{{ loading ? 'Logging in…' : 'Log in' }}</button>
+      </form>
+      <p class="foot">
+        <RouterLink to="/register">Create an account</RouterLink>
+      </p>
+    </div>
   </main>
 </template>
